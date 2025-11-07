@@ -3,6 +3,7 @@ import Header from './components/Header';
 import Hero from './components/Hero';
 import GuideCard from './components/GuideCard';
 import Footer from './components/Footer';
+import AuthModal from './components/AuthModal';
 
 const MOCK_GUIDES = [
   {
@@ -40,6 +41,8 @@ const MOCK_GUIDES = [
 export default function App() {
   const [guides, setGuides] = React.useState(MOCK_GUIDES);
   const [search, setSearch] = React.useState('');
+  const [showAuth, setShowAuth] = React.useState(false);
+  const [authMode, setAuthMode] = React.useState('signin');
 
   const handleSearch = (q) => {
     setSearch(q);
@@ -63,9 +66,17 @@ export default function App() {
     alert(`Opening chat with ${guide.name}. In a full app, this would open an in-app messenger.`);
   };
 
+  const openSignIn = () => { setAuthMode('signin'); setShowAuth(true); };
+  const openSignUp = () => { setAuthMode('signup'); setShowAuth(true); };
+
+  const handleAuthSubmit = (mode, data) => {
+    setShowAuth(false);
+    alert(`${mode === 'signin' ? 'Signed in' : 'Account created'} for ${data.email}`);
+  };
+
   return (
     <div className="min-h-screen bg-white text-slate-900">
-      <Header />
+      <Header onSignIn={openSignIn} onSignUp={openSignUp} />
       <Hero onSearch={handleSearch} />
 
       <main>
@@ -83,6 +94,15 @@ export default function App() {
       </main>
 
       <Footer />
+
+      {showAuth && (
+        <AuthModal
+          mode={authMode}
+          onClose={() => setShowAuth(false)}
+          onSwitchMode={setAuthMode}
+          onSubmit={handleAuthSubmit}
+        />
+      )}
     </div>
   );
 }
